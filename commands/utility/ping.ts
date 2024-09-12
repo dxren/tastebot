@@ -1,4 +1,9 @@
-import { ChatInputCommandInteraction, CommandInteraction, SlashCommandBuilder, type Interaction } from "discord.js";
+import {
+  ChatInputCommandInteraction,
+  CommandInteraction,
+  SlashCommandBuilder,
+  type Interaction,
+} from "discord.js";
 
 const data = new SlashCommandBuilder()
   .setName("ping")
