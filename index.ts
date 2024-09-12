@@ -1,5 +1,5 @@
 // Require the necessary discord.js classes
-const { Client, Events, GatewayIntentBits } = require("discord.js");
+import { Client, Events, GatewayIntentBits } from "discord.js";
 
 const token = process.env.DISCORD_TOKEN;
 // Create a new client instance
