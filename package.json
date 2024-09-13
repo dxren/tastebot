@@ -10,7 +10,9 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "discord.js": "^14.16.2"
+    "cheerio": "^1.0.0",
+    "discord.js": "^14.16.2",
+    "openai": "^4.61.0"
   },
   "scripts": {
     "deploy": "bun deploy-commands.ts",

@@ -5,7 +5,6 @@ import {
   SlashCommandStringOption,
 } from "discord.js";
 import type { Command } from "../types";
-import { summarizeSite } from "../services/scraper";
 import { summarizeUrl } from "../services/openai/getSummary";
 
 const optionUrl = new SlashCommandStringOption()
@@ -26,11 +25,17 @@ const createEmbed = async (url: string, useLargeImage: boolean) => {
     .setURL(url)
     .setColor("#ed6226");
 
-  //   if (useLargeImage) {
-  //     embed.setImage(summary.imageUrl);
-  //   } else {
-  //     embed.setThumbnail(summary.imageUrl);
-  //   }
+  if (useLargeImage) {
+    embed.setImage(
+      summary.imageURL ||
+        "https://cdn.discordapp.com/attachments/1283885817223446551/1284142569877667860/download_1.png"
+    );
+  } else {
+    embed.setThumbnail(
+      summary.imageURL ||
+        "https://cdn.discordapp.com/attachments/1283885817223446551/1284142569877667860/download_1.png"
+    );
+  }
 
   return embed;
 };

@@ -1,17 +1,19 @@
 import OpenAI from "openai";
 const openai = new OpenAI();
 import { fetch } from "bun";
+import { load } from "cheerio";
+import * as cheerio from "cheerio";
 
 /**
  * takes in html of URL
  * passes to LLM
- * return LLM-generated description summary as a string
+ * return LLM-generated description summary, title, and imgURL as a Summary object
  */
 
 type Summary = {
   title: string;
   description: string;
-  //eventually imageURL: string
+  imageURL: string;
 };
 
 async function fetchHTML(url: string) {
@@ -19,7 +21,16 @@ async function fetchHTML(url: string) {
   return await response.text();
 }
 
-async function generateSummaries(html: string): Promise<Summary> {
+function extractOGImg(html: string): string {
+  const $ = cheerio.load(html);
+  const ogImage = $('meta[property="og:image"]').attr("content");
+  return ogImage || "";
+}
+
+async function generateSummaries(
+  html: string,
+  ogImage: string
+): Promise<Summary> {
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
@@ -49,13 +60,15 @@ async function generateSummaries(html: string): Promise<Summary> {
   if (!AIResponse) {
     throw new Error("Failed to get AI response content");
   }
-  return parseSummary(AIResponse);
+  return parseSummary(AIResponse, ogImage);
 }
 
-function parseSummary(AISummary: string): Summary {
+function parseSummary(AISummary: string, ogImg: string): Summary {
   const lines = AISummary.split("\n");
   //init Summary object byt using Partial to create an object that doesnt have all the properties yet
-  const summary: Partial<Summary> = {};
+  const summary: Partial<Summary> = {
+    imageURL: ogImg,
+  };
 
   lines.forEach((line) => {
     if (line.startsWith("Title:")) {
@@ -75,16 +88,15 @@ function parseSummary(AISummary: string): Summary {
 export async function summarizeUrl(url: string): Promise<Summary> {
   try {
     const html = await fetchHTML(url);
-    return await generateSummaries(html);
+    const imageURL = extractOGImg(html);
+    return await generateSummaries(html, imageURL);
   } catch (error) {
     console.error("Error summarizing url", error);
     throw error;
   }
 }
 
-//TESTING
-// summarizeUrl(
-//   "https://www.nass.usda.gov/Research_and_Science/Cropland/sarsfaqs2.php"
-// )
+// TESTING;
+// summarizeUrl("https://www.maximumnewyork.com/p/nycs-elizabeth-street-garden")
 //   .then((summary) => console.log(summary))
 //   .catch((error) => console.error("error: ", error));
