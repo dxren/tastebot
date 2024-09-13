@@ -5,3 +5,4 @@ export const getEnv = (variableName: string): string => {
   if (!result) throw new Error(`Failed to loda ${variableName}`);
   return result;
 };
+
