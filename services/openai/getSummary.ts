@@ -32,7 +32,7 @@ async function generateSummaries(html: string): Promise<Summary> {
         role: "user",
         content: `Analyze the following HTML content and provide these outputs:
         1. A title (max 30 characters)
-        2. A brief description (max 250 characters)
+        2. A brief description, identify one non-obvious insight and do not use any version of the phrase "one notable insight is..."(max 250 characters)
         
         Format your response as follows:
         Title: [Your title here]
@@ -72,7 +72,7 @@ function parseSummary(AISummary: string): Summary {
   return summary as Summary;
 }
 
-async function summarizeUrl(url: string): Promise<Summary> {
+export async function summarizeUrl(url: string): Promise<Summary> {
   try {
     const html = await fetchHTML(url);
     return await generateSummaries(html);
@@ -82,6 +82,9 @@ async function summarizeUrl(url: string): Promise<Summary> {
   }
 }
 
-summarizeUrl("https://www.maximumnewyork.com/p/nycs-elizabeth-street-garden")
-  .then((summary) => console.log(summary))
-  .catch((error) => console.error("error: ", error));
+//TESTING
+// summarizeUrl(
+//   "https://www.nass.usda.gov/Research_and_Science/Cropland/sarsfaqs2.php"
+// )
+//   .then((summary) => console.log(summary))
+//   .catch((error) => console.error("error: ", error));
