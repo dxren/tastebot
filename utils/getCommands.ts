@@ -2,7 +2,7 @@ import type { Command } from "../types";
 import fs from "fs";
 import path from "path";
 
-const PATH_COMMANDS = path.join(__dirname, "../commands/utility");
+const PATH_COMMANDS = path.join(__dirname, "../commands");
 
 const getCommands = async (): Promise<Command[]> => {
     const commandFileNames = fs.readdirSync(PATH_COMMANDS);
