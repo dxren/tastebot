@@ -6,10 +6,4 @@ export const metadata = new SlashCommandBuilder()
 
 export const execute = async (interaction: ChatInputCommandInteraction) => {
   await interaction.reply("Pong!");
-<<<<<<< HEAD
 };
-=======
-};
-
-export { data, execute };
->>>>>>> main
