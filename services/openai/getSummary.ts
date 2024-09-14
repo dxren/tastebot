@@ -1,7 +1,6 @@
 import OpenAI from "openai";
 const openai = new OpenAI();
 import { fetch } from "bun";
-import { load } from "cheerio";
 import * as cheerio from "cheerio";
 
 /**
@@ -21,10 +20,15 @@ async function fetchHTML(url: string) {
   return await response.text();
 }
 
+function isValidImgUrl(url: string): boolean {
+  const imgUrlRegex = /^https?:\/\/.*\.(?:png|jpe?g|webp|gif)$/i;
+  return imgUrlRegex.test(url)
+}
 function extractOGImg(html: string): string {
   const $ = cheerio.load(html);
+  const fallbackUrl = "https://cdn.discordapp.com/attachments/1283885817223446551/1284142569877667860/download_1.png";
   const ogImage = $('meta[property="og:image"]').attr("content");
-  return ogImage || "";
+  return (ogImage && isValidImgUrl(ogImage)) ? ogImage : fallbackUrl;
 }
 
 async function generateSummaries(
