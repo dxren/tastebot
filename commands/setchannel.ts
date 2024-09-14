@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, channelMention } from "discord.js";
 import type { Command, ConfigObject } from "../types";
-import path from "path";
+import path from "node:path";
 import fs from 'node:fs/promises';
 
 const CONFIG_PATH = '../config.json';
