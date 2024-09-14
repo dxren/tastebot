@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import { SlashCommandBuilder, ChatInputCommandInteraction, channelMention } from "discord.js";
 import type { Command, ConfigObject } from "../types";
 import path from "path";
 import fs from 'node:fs/promises';
@@ -41,7 +41,7 @@ const command: Command = {
         interaction.reply({ ephemeral: true, content: `Error updating config: ${error}`});
         return;
     }
-    interaction.reply({ ephemeral: true, content: `Got it! TasteBot will now write to <#${channelId}>.` });
+    interaction.reply({ ephemeral: true, content: `Got it! TasteBot will now write to ${channelMention(channelId)}` });
   },
 };
 

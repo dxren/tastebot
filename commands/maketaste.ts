@@ -3,6 +3,7 @@ import {
   SlashCommandBooleanOption,
   SlashCommandBuilder,
   SlashCommandStringOption,
+  userMention,
 } from "discord.js";
 import type { Command } from "../types";
 import { summarizeUrl } from "../services/openai/getSummary";
@@ -19,11 +20,11 @@ const optionUseLargeImage = new SlashCommandBooleanOption()
   .setDescription("Use a larger summary image")
   .setRequired(false);
 
-const createEmbed = async (url: string, useLargeImage: boolean) => {
+const createEmbed = async (url: string, userId: string, useLargeImage: boolean) => {
   const summary = await summarizeUrl(url);
   const embed = new EmbedBuilder()
     .setTitle(summary.title)
-    .setDescription(summary.description)
+    .setDescription(`${summary.description}\n\nSubmitted by ${userMention(userId)}`)
     .setURL(url)
     .setColor("#ed6226");
 
@@ -66,6 +67,7 @@ const command: Command = {
     }
     const embed = await createEmbed(
       url,
+      interaction.user.id,
       interaction.options.getBoolean("use-large-image") ?? false
     );
     const newMessage = await tasteChannel.send({ embeds: [embed] });
