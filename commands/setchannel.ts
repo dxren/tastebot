@@ -1,23 +1,8 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import { SlashCommandBuilder, ChatInputCommandInteraction, channelMention } from "discord.js";
 import type { Command, ConfigObject } from "../types";
-import path from "path";
+import path from "node:path";
 import fs from 'node:fs/promises';
-
-const CONFIG_PATH = '../config.json';
-
-const updateConfig = async (tasteChannelId: string): Promise<string | undefined> => {
-    const configPath = path.join(__dirname, CONFIG_PATH);
-    const config: ConfigObject = (await import(configPath)).default;
-    if (!config) return;
-    const newConfig = {...config};
-    newConfig.tasteChannelId = tasteChannelId;
-    try {
-        await fs.writeFile(configPath, JSON.stringify(newConfig, null, 2));
-    } catch (e) {
-        console.error(e);
-        return String(e);
-    }
-}
+import { setTasteChannelId } from "../config";
 
 const command: Command = {
   metadata: new SlashCommandBuilder()
@@ -36,12 +21,12 @@ const command: Command = {
         interaction.reply({ ephemeral: true, content: `Channel ${channelId} does not seem to exist.` });
         return;
     }
-    const error = await updateConfig(channelId);
+    const error = await setTasteChannelId(channelId);
     if (error) {
         interaction.reply({ ephemeral: true, content: `Error updating config: ${error}`});
         return;
     }
-    interaction.reply({ ephemeral: true, content: `Got it! TasteBot will now write to <#${channelId}>.` });
+    interaction.reply({ ephemeral: true, content: `Got it! TasteBot will now write to ${channelMention(channelId)}` });
   },
 };
 
