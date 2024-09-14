@@ -7,9 +7,7 @@ import {
 } from "discord.js";
 import type { Command } from "../types";
 import { summarizeUrl } from "../services/openai/getSummary";
-import path from "node:path";
-
-const CONFIG_PATH = '../config.json';
+import { config } from '../config';
 
 const optionUrl = new SlashCommandStringOption()
   .setName("url")
@@ -52,8 +50,6 @@ const command: Command = {
     .addBooleanOption(optionUseLargeImage),
 
   execute: async (interaction) => {
-
-      const config = await import(path.join(__dirname, CONFIG_PATH));
       const tasteChannel = interaction.guild?.channels.cache.get(config.tasteChannelId);
       if (!tasteChannel) {
         interaction.reply({ content: `Failed to find channel with id: ${config.tasteChannelId || '(none)'}. Please run /setchannel first.`, ephemeral: true });
