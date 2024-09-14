@@ -7,6 +7,8 @@ import {
 import type { Command } from "../types";
 import { summarizeUrl } from "../services/openai/getSummary";
 
+import config from '../config.json';
+
 const optionUrl = new SlashCommandStringOption()
   .setName("url")
   .setDescription("The URL to make a taste from")
@@ -48,7 +50,15 @@ const command: Command = {
     .addBooleanOption(optionUseLargeImage),
 
   execute: async (interaction) => {
-    await interaction.deferReply();
+      const tasteChannel = interaction.guild?.channels.cache.get(config.tasteChannelId);
+      if (!tasteChannel) {
+        interaction.reply({ content: `Failed to find channel with id: ${config.tasteChannelId || '(none)'}. Please run /setchannel first.`, ephemeral: true });
+        return;
+      } else if (!tasteChannel.isTextBased || !tasteChannel.isSendable()) {
+        interaction.reply({ content: `Channel ${config.tasteChannelId} cannot be used.`, ephemeral: true });
+        return;
+      }
+    interaction.reply({ content: 'Generating your summary...', ephemeral: true });
     const url = interaction.options.getString("url");
     if (!url) {
       await interaction.editReply("No URL provided");
@@ -58,7 +68,8 @@ const command: Command = {
       url,
       interaction.options.getBoolean("use-large-image") ?? false
     );
-    await interaction.editReply({ embeds: [embed] });
+    const newMessage = await tasteChannel.send({ embeds: [embed] });
+    await interaction.editReply(`Done! See your post [here](${newMessage.url})!`);
   },
 };
 
